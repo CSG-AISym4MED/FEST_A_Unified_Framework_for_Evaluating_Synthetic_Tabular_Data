@@ -1,0 +1,82 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "privacy_utility_framework"
+version = "0.0.11"
+authors = [{name = "KS"}]
+description = "Privacy-utility framework from synprivutil"
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.10"
+dependencies = [
+    "humanize",
+    "numpy>=1.26.4",
+    "pandas>=2.2.2",
+    "scikit-learn>=1.5.1",
+    "scipy>=1.13.0",
+]
+
+[project.optional-dependencies]
+evaluation = [
+    "anonymeter>=1.0.0",
+    "dython>=0.7.8",
+    "matplotlib>=3.9.2",
+    "POT>=0.9.4",
+    "seaborn>=0.13",
+    "tqdm",
+]
+generation = [
+]
+cyberdata = [
+    "kaggle>=1.6.17",
+]
+# Reserved for a future packaging split of the generation stack.
+# Today the lightweight synthesizers still ship in the base distribution,
+# even though they conceptually belong to the generation layer.
+# Backwards-compatible extra for SDV-backed synthesizers.
+sdv = [
+    "sdv==1.15.0",
+]
+dev = [
+    "ipykernel",
+    "notebook",
+    "pytest",
+    "ruff",
+]
+all = [
+    "anonymeter>=1.0.0",
+    "dython>=0.7.8",
+    "ipykernel",
+    "nbconvert",
+    "kaggle>=1.6.17",
+    "matplotlib>=3.9.2",
+    "notebook",
+    "POT>=0.9.4",
+    "pytest",
+    "ruff",
+    "seaborn>=0.13",
+    "sdv==1.15.0",
+    "tqdm",
+]
+
+[project.scripts]
+privacy-framework-install-cyberdata = "privacy_utility_framework.cyberdata:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+lint.select = ["E", "F", "I", "B", "UP"]
+lint.ignore = []
+exclude = [".venv", "venv", "build", "dist", ".git", "__pycache__"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"

@@ -1,58 +1,168 @@
-**This is the repository for the thesis work "Design and Implementation of a Platform for Privacy Assessment of Synthetic Data Generation with Generative AI"  done at Communication Systems Group, University of Zurich, supervised by Mr. Weijie Niu, Dr. Alberto Huertas Celdran and Prof. Dr. Burkhard Stiller.**
-
 # Synthetic Data Privacy and Utility Framework
+
+**This repository was created for the thesis work "Design and Implementation of a Platform for Privacy Assessment of Synthetic Data Generation with Generative AI"  done at Communication Systems Group, University of Zurich, supervised by Mr. Weijie Niu, Dr. Alberto Huertas Celdran and Prof. Dr. Burkhard Stiller.**
 
 This project provides a python library for generating synthetic datasets and evaluating their privacy and utility. It includes tools for creating synthetic data, performing various privacy and utility analyses, and visualizing results through plots. The framework is designed to help researchers and developers assess the balance between data utility and privacy in synthetic datasets.
 
+The installation is intentionally split into a minimal default base and optional extras. The
+default install is mainly the preprocessing foundation of the project, while the main project
+functionality lives in the existing `metrics`, `plots`, and `synthesizers` subpackages.
+
 ## Prerequisites
-The python version 3.10 was used to develop this framework.
-For the following packages, these versions were used:
+
+The python version 3.10 was used to develop this framework. You can check python dependencies at [pyproject.toml](./pyproject.toml). For the following core packages, these versions were used:
+
 - Numpy version: 1.26.4
 - Pandas version: 2.2.2
-- SDV version: 1.15.0
 - Scikit-learn version: 1.5.1
-- Seaborn version: 0.12.2
+- Seaborn version: 0.13.2
 - Matplotlib version: 3.9.2
-- RDT version: 1.12.3
 - Anonymeter version: 1.0.0
 - Scipy version: 1.13.0
 - Dython version: 0.7.8
-- OT version: 0.9.4
+- POT version: 0.9.4
+
+The SDV-based synthesizers are optional and require:
+
+- SDV version: 1.15.0
+
 ## Installation
-No other installation, besides cloning this repository is needed.
+
+To install this python package, we recommend using a virtual environment, such as `venv` or `conda`, to avoid conflicts with other packages.
+
+By default, `pip install .` gives you only the lightweight base installation. This is
+intentionally a minimal install centered on the preprocessing foundation of the project, not the
+full privacy/utility evaluation stack.
+
+The default install includes:
+
+- the `dataset` subpackage for preprocessing and transformation
+- the `utils` subpackage and distance strategy helpers
+
+In other words, the default install is useful for basic preprocessing workflows, but the main
+project functionality is provided by:
+
+- `metrics` and `plots` for privacy and utility evaluation
+- `synthesizers` for synthetic data generation
+
+run this command from the project directory:
+
+```bash
+pip install .
+```
+
+If you want the evaluation functionality of the project, install the optional `evaluation`
+extra. This enables the `metrics` and `plots` subpackages:
+
+```bash
+pip install .[evaluation]
+```
+
+If you want an explicit generation installation option, you can use the optional
+`generation` extra:
+
+```bash
+pip install .[generation]
+```
+
+This option is intended for generation-focused workflows.
+
+If you want the SDV-backed models inside the existing `synthesizers` subpackage, install:
+
+```bash
+pip install .[sdv]
+```
+
+If you also want the optional cybersecurity datasets downloaded into
+`datasets/original/cybersecurity/`, install the downloader extra:
+
+```bash
+pip install -e .[cyberdata]
+privacy-framework-install-cyberdata
+```
+
+Kaggle-backed downloads require Kaggle credentials via `~/.kaggle/kaggle.json` or the
+`KAGGLE_USERNAME` and `KAGGLE_KEY` environment variables.
+
+`pip install -e .[cyberdata]` intentionally does not auto-download datasets as a hidden
+post-install side effect. `pip` extras can declare downloader dependencies, but they do
+not provide a reliable, standard post-install hook for editable installs.
+For `UNSW_NB15_training-set.csv`, the installer keeps the official UNSW page as the
+source reference but uses a public mirror for the actual file download because the UNSW
+landing page does not expose a stable direct CSV URL.
+
+If you want to install the package in editable mode for development, use:
+
+```bash
+pip install -e .[dev]
+```
+
+If you want everything optional in one step (evaluation, generation, cyberdata downloader deps,
+and dev tooling), use:
+
+```bash
+pip install -e .[all]
+```
 
 ## Content
 
-- datasets: in this folder, the original and synthetic datasets can be found. The following original datasets were used: [Diabetes](https://www.kaggle.com/datasets/akshaydattatraykhare/diabetes-dataset), [Cardio](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset) and [Insurance](https://www.kaggle.com/datasets/mirichoi0218/insurance).
-- examples:
-  - dataset_transform_normalization.py: Example of how to transform and normalize a dataset.
-  - plots.py: Some plot functions that show how plots can be generated.
-  - privacy_attacks.py: Usage-Example for each attacker-based privacy metric.
-  - privacy_distance.py: Usage-Example for each distance-based privacy metric.
-  - synthetic_data_generation.py: Example on how to generate synthetic data.
-  - train_test.py: Example of creating train and test datasets.
-  - utility.py: Usage-Example for each utility metric.
-- plots: includes different kind of generated plots from the original and synthetic datasets.
-- privacy_utility_framework: includes the framework code.
-  - privacy_utility_framework:
-    - dataset: includes the implementation of the Dataset object used across the code.
-    - metrics: includes all privacy and utility metrics.
-    - plots: includes the code for the available plots.
-    - synthesizers: includes the implementation of all synthetic data generation models.
-    - utils: utility functions, includes only dynamic_train_test_split at the moment.
-- synthetic_models: includes the saved fitted models.
+- `datasets`: in this folder, the original and synthetic datasets can be found. The following original datasets were used: [Diabetes](https://www.kaggle.com/datasets/akshaydattatraykhare/diabetes-dataset), [Cardio](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset) and [Insurance](https://www.kaggle.com/datasets/mirichoi0218/insurance).
+  The cybersecurity datasets are intended to be downloaded locally with
+  `privacy-framework-install-cyberdata` rather than committed to git.
+- `examples`:
+  - `dataset_transform_normalization.py`: Example of how to transform and normalize a dataset.
+  - `plots.py`: Some plot functions that show how plots can be generated.
+  - `privacy_attacks.py`: Usage-Example for each attacker-based privacy metric.
+  - `privacy_distance.py`: Usage-Example for each distance-based privacy metric.
+  - `synthetic_data_generation.py`: Example on how to generate synthetic data.
+  - `train_test.py`: Example of creating train and test datasets.
+  - `utility.py`: Usage-Example for each utility metric.
+- `plots`: includes different kind of generated plots from the original and synthetic datasets.
+- `src`: includes the framework code.
+  - `privacy_utility_framework`:
+    - `dataset`: includes the implementation of the `Dataset` object used across the code, the `TableTransformer` class for preprocessing and `ColumnTransformer` classes for transforming each feature.
+    - `metrics`: includes the main privacy and utility evaluation functionality of the project.
+    - `plots`: includes the plotting helpers used with the evaluation workflows.
+    - `synthesizers`: includes the implementation of the synthetic data generation models.
+      - `core`: lightweight synthesizers that do not depend on SDV, including `GaussianMixtureModel` and `RandomModel`.
+      - `sdv`: optional SDV-backed synthesizers, including `GaussianCopulaModel`, `CTGANModel`, `CopulaGANModel`, and `TVAEModel`.
+    - `utils`: utility functions, including dynamic_train_test_split and:
+      - `distance`: distance metrics and `DistanceStrategy` classes for calculating them between original and synthetic datasets.
+- `synthetic_models`: includes the saved fitted models.
+- `tests`: includes python tests for the package.
+
+## Version 0.0.11 - Data Transformation and Distance Strategies for Privacy Metrics
+
+This branch introduces the following relevant additions and improvements:
+
+- Configurable table-level preprocessing via `TableTransformer` and `ColumnTransformer`:
+  - `TableTransformer` is a preprocessor for entire datasets, composed of multiple `ColumnTransformer` instances.
+  - `ColumnTransformer` is intended to transform a individual column in the dataset, and revert values back to the original space. Different transformers are implemented for numerical and categorical data, including scaling, encoding, and quantile/ECDF-based transformations.
+    - `QuantileTransformer` for quantile-based transforms, based on sklearn's one.
+    - `ECDFTransformer` for empirical CDF-based transforms.
+    - `UniformEncoder` for reversible categorical-to-continuous encoding.
+    - `MinMaxScaler`, `OneHotEncoder` and `IdentityTransformer` are some other useful basic transformers implemented.
+- New distance-strategy framework in `privacy_utility_framework.utils.distance`:
+  - Strategy factory for `scipy`, `transformed`, `quantile`, `ecdf`, and `custom` distances.
+  - Support for callable/custom metrics and strategy-specific defaults.
+  - Batched/aggregated distance computations for large pairwise comparisons.
+- Distance-based privacy metrics (`DCR`, `NNDR`, `AdversarialAccuracy`) now support pluggable distance strategies.
+- Fixed bug that caused memory limit exceeding when calculating pairwise distances for large datasets in distance-based privacy metrics by implementing a batched computation approach.
+- Tests covering new transformers and distance strategies.
+- Updated [examples/privacy_distance.py](./examples/privacy_distance.py) to demonstrate usage of new distance strategies and table/column transformers.
 
 ## Example Usage
 
-Below is an example of how to generate synthetic data using the `GaussianMixtureModel`.
+Below is an example of how to generate synthetic data using the lightweight
+`GaussianMixtureModel`.
 
 ```python
-# Load original dataset
-original_data = pd.read_csv('../examples/insurance_datasets/train/insurance.csv')
+import pandas as pd
 
-# Create metadata for the dataset
-metadata = SingleTableMetadata()
-metadata.detect_from_dataframe(original_data)
+from privacy_utility_framework.synthesizers import GaussianMixtureModel
+
+# Load original dataset
+original_data = pd.read_csv('./examples/insurance_datasets/train/insurance.csv')
 
 # Initialize the Gaussian Mixture Model with a max of 10 components
 gmm_model = GaussianMixtureModel(max_components=10)
@@ -68,24 +178,63 @@ gmm_model.save_sample("gmm_sample.csv", len(original_data))
 print("Synthetic data generated and saved to gmm_sample.csv.")
 ```
 
+The SDV-backed synthesizers remain available as optional imports after installing `.[sdv]`:
+
+```python
+from sdv.metadata import SingleTableMetadata
+
+from privacy_utility_framework.synthesizers import CTGANModel
+
+metadata = SingleTableMetadata()
+metadata.detect_from_dataframe(original_data)
+ctgan_model = CTGANModel(metadata)
+```
+
 Here is an example of how to use the `PrivacyMetricManager` to evaluate privacy metrics between original and synthetic datasets.
 
 ```python
-original_data = pd.read_csv(f"../datasets/original/diabetes.csv")
-synthetic_data = pd.read_csv(f"../datasets/synthetic/diabetes_datasets/ctgan_sample.csv")
+import pandas as pd
+
+from privacy_utility_framework.metrics.privacy.distance import (
+    AdversarialAccuracyCalculator,
+    DCRCalculator,
+    NNDRCalculator
+)
+from privacy_utility_framework.metrics.privacy.privacy_metric_manager import (
+    PrivacyMetricManager,
+)
+
+original_data = pd.read_csv("./datasets/original/diabetes.csv")
+synthetic_data = pd.read_csv("./datasets/synthetic/diabetes_datasets/ctgan_sample.csv")
 
 original_name = "Diabetes"
 synthetic_name = "CTGAN"
 
 p = PrivacyMetricManager()
 
-metric_list = \
-    [
-        DCRCalculator(original_data, synthetic_data, original_name=original_name, synthetic_name=synthetic_name),
-        NNDRCalculator(original_data, synthetic_data, original_name=original_name, synthetic_name=synthetic_name),
-        AdversarialAccuracyCalculator(original_data, synthetic_data, original_name=original_name,
-                                      synthetic_name=synthetic_name)
-    ]
+metric_list = [
+    DCRCalculator(
+        original_data,
+        synthetic_data,
+        original_name=original_name,
+        synthetic_name=synthetic_name,
+        preprocess=True,
+    ),
+    NNDRCalculator(
+        original_data,
+        synthetic_data,
+        original_name=original_name,
+        synthetic_name=synthetic_name,
+        preprocess=True,
+    ),
+    AdversarialAccuracyCalculator(
+        original_data,
+        synthetic_data,
+        original_name=original_name,
+        synthetic_name=synthetic_name,
+        preprocess=True,
+    ),
+]
 p.add_metric(metric_list)
 results = p.evaluate_all()
 for key, value in results.items():
@@ -95,9 +244,19 @@ for key, value in results.items():
 Here is another example of how to use the `UtilityMetricManager` to evaluate utility metrics between original and synthetic datasets. This example demonstrates the use of basic statistics and mutual information metrics.
 
 ```python
+import pandas as pd
+
+from privacy_utility_framework.metrics.utility.statistical import (
+    BasicStatsCalculator,
+    MICalculator,
+)
+from privacy_utility_framework.metrics.utility.utility_metric_manager import (
+    UtilityMetricManager,
+)
+
 # Load original and synthetic datasets
-original_data = pd.read_csv("../datasets/original/insurance.csv")
-synthetic_data = pd.read_csv("../datasets/synthetic/insurance_datasets/ctgan_sample.csv")
+original_data = pd.read_csv("./datasets/original/insurance.csv")
+synthetic_data = pd.read_csv("./datasets/synthetic/insurance_datasets/ctgan_sample.csv")
 
 # Specify dataset names for identification
 original_name = "Insurance"
@@ -108,8 +267,12 @@ p = UtilityMetricManager()
 
 # Define metrics to evaluate
 metric_list = [
-    BasicStatsCalculator(original_data, synthetic_data, original_name=original_name, synthetic_name=synthetic_name),
-    MICalculator(original_data, synthetic_data, original_name=original_name, synthetic_name=synthetic_name),
+    BasicStatsCalculator(
+        original_data, synthetic_data, original_name=original_name, synthetic_name=synthetic_name
+    ),
+    MICalculator(
+        original_data, synthetic_data, original_name=original_name, synthetic_name=synthetic_name
+    ),
 ]
 
 # Add metrics to manager and evaluate
@@ -119,4 +282,5 @@ results = p.evaluate_all()
 # Print results
 for key, value in results.items():
     print(f"{key}: {value}")
+
 ```
