@@ -284,3 +284,13 @@ for key, value in results.items():
     print(f"{key}: {value}")
 
 ```
+## Citation
+If you find this work useful, please consider citing the paper:
+```
+@article{niu2025fest,
+  title={Fest: A unified framework for evaluating synthetic tabular data},
+  author={Niu, Weijie and Celdran, Alberto Huertas and Siarsky, Karoline and Stiller, Burkhard},
+  journal={arXiv preprint arXiv:2508.16254},
+  year={2025}
+}
+```
